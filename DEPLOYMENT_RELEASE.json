@@ -1,0 +1,11 @@
+{
+  "product": "Franklin Helps",
+  "domain": "franklinhelps.org",
+  "release": "FH-MAIN-0.1.11",
+  "state": "SCC_ACCEPTED_CURRENT_DEPLOYMENT_READY_NOT_DEPLOYED_AT_SOURCE_PREPARATION",
+  "source_bundle": "FRANKLIN_HELPS__GITHUB_RENDER_SOURCE__FH-MAIN-0.1.11.zip",
+  "source_bundle_sha256": "db3d25d3a2a3e77dcf94385a22f45c6eb6389f26950a61db261fb37417099c50",
+  "deployment_platform": "Render Static Site",
+  "financial_actions": "CLOSED",
+  "live_outreach": "NOT_AUTHORIZED"
+}
