@@ -3,7 +3,7 @@
   "domain": "franklinhelps.org",
   "release": "FH-MAIN-0.1.17",
   "predecessor": "FH-MAIN-0.1.16",
-  "state": "OWNER_AUTHORIZED_DEPLOY_PENDING_RENDER_VERIFICATION",
+  "state": "DEPLOYED_LIVE_VERIFIED",
   "acceptance_current_axis": "SCC FH-SCC-0.11.0 identifies FH-MAIN-0.1.15 as accepted/current; owner standing instruction is to deploy each new Main Product version unless explicitly withheld. Deployment does not silently alter SCC acceptance/currentness.",
   "source_bundle": "FRANKLIN_HELPS__PUBLIC_SITE__FH-MAIN-0.1.17__STATIC_DEPLOY.zip",
   "source_transport": "deploy/source.b64",
@@ -18,5 +18,12 @@
   "stripe_payments": "CLOSED_PENDING_SETUP",
   "financial_actions": "CLOSED",
   "live_outreach": "NOT_AUTHORIZED",
-  "real_participant_publication": "0_LIVE_PARTICIPANTS"
+  "real_participant_publication": "0_LIVE_PARTICIPANTS",
+  "deployed_source_commit": "d46b756ea4a1569ec94c39d61bc01eff8e831dda",
+  "render_deploy_id": "dep-daogv6n40ujc73f96am0",
+  "render_deploy_status": "live",
+  "render_finished_at": "2026-09-21T11:06:22.76382Z",
+  "render_build_sha256_verified": true,
+  "render_log_verified_bundle_sha256": "70a3e10f90132b98d7a7432fb17bc40aa4c68ca89fe063af13ef3e5f5c0d3de0",
+  "clean_cache_redeploy": true
 }
