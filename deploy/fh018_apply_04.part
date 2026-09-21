@@ -1,0 +1,46 @@
+rawSuggestions(saved,saved);\n")]
+EXPECTED="380420e35532a8cf3aaf6c5185a48a768fc8eb95a6d851d386d5c7ac75314d45"
+
+def dec(x): return gzip.decompress(base64.b64decode(x)).decode()
+# Home/Give: replace only the main public content; preserve metadata/header/footer.
+for rel in ['index.html','es/index.html','give/index.html','es/give/index.html']:
+    p=ROOT/rel;s=p.read_text(encoding='utf-8');main=dec(PARTS[rel+'::main'])
+    s2=re.sub(r'<main id="main">.*?</main>',main,s,count=1,flags=re.S)
+    assert s2!=s,rel+' main replacement failed';p.write_text(s2,encoding='utf-8')
+# Find Help: replace the decision/search prefix and trust/privacy suffix while preserving the 24 source-backed static cards.
+for rel in ['help/index.html','es/help/index.html']:
+    p=ROOT/rel;s=p.read_text(encoding='utf-8');pre=dec(PARTS[rel+'::prefix']);suf=dec(PARTS[rel+'::suffix'])
+    main_start=s.index('<main'); grid_start=s.index('<div aria-live="polite" class="resources" id="resourceGrid">'); sugg=s.index('<section aria-labelledby="suggestedHeading"',grid_start); main_end=s.index('</main>',sugg)+7
+    s= s[:main_start]+pre+s[grid_start:sugg]+suf+s[main_end:]
+    if rel.startswith('es/'):
+        s=s.replace('Revisar antes de usar','Verifica antes de ir').replace('Fuente oficial / Ver detalles ↗','Ver detalles oficiales ↗')
+        s=re.sub(r'Fuente revisada: (\d{4}-\d{2}-\d{2}) • Revisar antes de: \d{4}-\d{2}-\d{2}',r'Verificado: \1',s)
+    else:
+        s=s.replace('Recheck before relying','Verify before going').replace('Official source / Get details ↗','View official details ↗')
+        s=re.sub(r'(?:Source checked|Checked): (\d{4}-\d{2}-\d{2}) • Recheck by: \d{4}-\d{2}-\d{2}',r'Checked: \1',s)
+    s=re.sub(r'<button aria-pressed="false" class="filter save-resource static-save" disabled="disabled" type="button">.*?</button>','',s)
+    p.write_text(s,encoding='utf-8')
+# Shared sitewide typography/spacing/sticky-offset overrides.
+css=ROOT/'assets/styles.css';ct=css.read_text(encoding='utf-8')
+if 'FH-MAIN-0.1.18 owner live-screen review' not in ct: ct=ct.rstrip()+'\n\n'+CSS_OVERRIDE
+css.write_text(ct,encoding='utf-8')
+# Resource runtime: compact/humanized cards + saved tools only when useful.
+app=ROOT/'assets/app.js';at=app.read_text(encoding='utf-8')
+for a,b in APP_REPLACEMENTS:
+    assert a in at,'app replacement source not found'
+    at=at.replace(a,b,1)
+app.write_text(at,encoding='utf-8')
+# Update SRI references everywhere after shared CSS/app changes.
+def sri(path): return 'sha384-'+base64.b64encode(hashlib.sha384(path.read_bytes()).digest()).decode()
+new_css=sri(css);new_app=sri(app)
+for p in ROOT.rglob('*.html'):
+    t=p.read_text(encoding='utf-8').replace(OLD_CSS,new_css).replace(OLD_APP,new_app)
+    p.write_text(t,encoding='utf-8')
+# Exact tree verification.
+items=[]
+for p in sorted(x for x in ROOT.rglob('*') if x.is_file()):
+    rel=str(p.relative_to(ROOT)).replace('\\','/');items.append((rel,hashlib.sha256(p.read_bytes()).hexdigest()))
+blob=''.join(h+'  '+r+'\n' for r,h in items).encode();actual=hashlib.sha256(blob).hexdigest()
+print('FH-MAIN-0.1.18 public content manifest SHA-256: '+actual)
+if EXPECTED!='__EXPECTED__': assert actual==EXPECTED,(actual,EXPECTED)
+print('FH-MAIN-0.1.18 overlay verification PASS')
