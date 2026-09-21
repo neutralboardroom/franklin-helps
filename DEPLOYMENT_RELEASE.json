@@ -3,7 +3,7 @@
   "domain": "franklinhelps.org",
   "release": "FH-MAIN-0.1.18",
   "predecessor": "FH-MAIN-0.1.17",
-  "state": "OWNER_AUTHORIZED_DEPLOY_PENDING_RENDER_VERIFICATION",
+  "state": "DEPLOYED_LIVE_VERIFIED",
   "acceptance_current_axis": "SCC acceptance/currentness remains a separate axis; owner standing instruction authorizes deployment of each qualified Main Product version unless explicitly withheld. Deployment does not self-promote SCC acceptance/currentness.",
   "source_bundle": "FRANKLIN_HELPS__PUBLIC_SITE__FH-MAIN-0.1.18__STATIC_DEPLOY.zip",
   "source_transport": "deploy/source.b64 plus deploy/overlay18.part1.b64..part4.b64",
@@ -21,5 +21,14 @@
   "stripe_payments": "CLOSED_PENDING_SETUP",
   "financial_actions": "CLOSED",
   "live_outreach": "NOT_AUTHORIZED",
-  "real_participant_publication": "0_LIVE_PARTICIPANTS"
+  "real_participant_publication": "0_LIVE_PARTICIPANTS",
+  "deployed_source_commit": "f55c2939734711f10a7d8318a0e92fca3f223894",
+  "render_deploy_id": "dep-daokmtrm8hqs73f2t2d0",
+  "render_deploy_status": "live",
+  "render_finished_at": "2026-09-21T15:21:49.235477Z",
+  "render_build_sha256_verified": true,
+  "render_verified_base_sha256": "70a3e10f90132b98d7a7432fb17bc40aa4c68ca89fe063af13ef3e5f5c0d3de0",
+  "render_verified_overlay_sha256": "25ab2e0c8dc7a1c1f8edfd940ff716cf004364aa93c8ddd57f73de12b748d8fe",
+  "render_verified_public_tree_sha256": "791c7e8b7b1f9dced707693835f77618ddfea3b29d97e8d87be8ebbb118b393e",
+  "clean_cache_redeploy": true
 }
