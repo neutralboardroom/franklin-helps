@@ -1,16 +1,20 @@
 {
   "product": "Franklin Helps",
   "domain": "franklinhelps.org",
-  "release": "FH-MAIN-0.1.11",
-  "state": "DEPLOYED_RENDER_ORIGIN_LIVE_CUSTOM_DOMAIN_PENDING",
-  "source_bundle": "FRANKLIN_HELPS__GITHUB_RENDER_SOURCE__FH-MAIN-0.1.11.zip",
-  "source_bundle_sha256": "db3d25d3a2a3e77dcf94385a22f45c6eb6389f26950a61db261fb37417099c50",
+  "release": "FH-MAIN-0.1.16",
+  "predecessor": "FH-MAIN-0.1.15",
+  "state": "OWNER_AUTHORIZED_DEPLOY_PENDING_RENDER_VERIFICATION",
+  "acceptance_current_axis": "SCC FH-SCC-0.10.0 identifies FH-MAIN-0.1.15 as accepted/current; deployment is an explicit owner-authorized successor action and does not silently alter SCC acceptance/currentness.",
+  "source_bundle": "FRANKLIN_HELPS__PUBLIC_SITE__FH-MAIN-0.1.16__STATIC_DEPLOY.zip",
+  "source_transport": "deploy/source.b64",
+  "source_bundle_sha256": "7df08b71f0317f8430eecd458f314b0548ae4f975c78f01d111593ab8ecf9664",
+  "approved_logo_master_sha256": "494e00c18433ed12244e9de50080116e0f9aff8c2f4d7e63405e15b95f2100c7",
+  "approved_logo_transparent_sha256": "8957f24a388cbdece649a4345672ecd067d5b93e3e4e09ec156b23bd2ec236f4",
   "deployment_platform": "Render Static Site",
   "render_service_id": "srv-daocmg8473hc739qqv8g",
   "render_origin": "https://franklin-helps.onrender.com",
-  "first_live_deploy_id": "dep-daocob3m8hqs73e63sm0",
-  "deployed_commit": "47a1a1e90b4a692b1f809655a3c6d02dc2c21ed0",
-  "custom_domain_status": "DNS_CONFIGURED_VERIFICATION_PENDING",
+  "owner_deployment_authorization": "EXPLICIT_IN_CHAT_2026-09-21",
   "financial_actions": "CLOSED",
-  "live_outreach": "NOT_AUTHORIZED"
+  "live_outreach": "NOT_AUTHORIZED",
+  "real_participant_publication": "0_LIVE_PARTICIPANTS"
 }
