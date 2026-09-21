@@ -1,0 +1,21 @@
+{
+  "product": "Franklin Helps",
+  "release": "FH-MAIN-0.1.11",
+  "deployment_date": "2026-09-21",
+  "platform": "Render Static Site",
+  "github_repository": "neutralboardroom/franklin-helps",
+  "render_service_id": "srv-daocmg8473hc739qqv8g",
+  "render_origin": "https://franklin-helps.onrender.com",
+  "deploy_id": "dep-daocob3m8hqs73e63sm0",
+  "deploy_status": "live",
+  "deployed_commit": "47a1a1e90b4a692b1f809655a3c6d02dc2c21ed0",
+  "build_command": "bash render-build.sh",
+  "source_bundle_sha256": "db3d25d3a2a3e77dcf94385a22f45c6eb6389f26950a61db261fb37417099c50",
+  "build_verification": "PASS_SHA256_ZIP_CRC_INDEX_PRESENT",
+  "custom_domain": "franklinhelps.org",
+  "custom_domain_status": "DNS_CONFIGURED_VERIFICATION_PENDING",
+  "dns_expected_root_a": "216.24.57.1",
+  "dns_expected_www_cname": "franklin-helps.onrender.com",
+  "financial_actions": "CLOSED",
+  "live_outreach": "NOT_AUTHORIZED"
+}
