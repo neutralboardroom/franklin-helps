@@ -107,3 +107,44 @@ assert Path("public/index.html").is_file(), "public/index.html missing after 0.1
 print("Franklin Helps FH-MAIN-0.1.19 exact public tree verified.")
 PY
 
+
+# Apply exact FH-MAIN-0.1.20 donor-outreach-readiness site overlay.
+cat \
+  deploy/overlay20.part01.b64 \
+  deploy/overlay20.part02.b64 \
+  deploy/overlay20.part03.b64 \
+  deploy/overlay20.part04.b64 \
+  deploy/overlay20.part05.b64 \
+  deploy/overlay20.part06.b64 \
+  deploy/overlay20.part07.b64 \
+  deploy/overlay20.part08.b64 \
+  | tr -d '\n' | base64 -d > /tmp/franklin-helps-overlay-0.1.20.zip
+
+python3 - <<'PY'
+from pathlib import Path
+import hashlib, zipfile
+
+overlay = Path("/tmp/franklin-helps-overlay-0.1.20.zip")
+data = overlay.read_bytes()
+actual = hashlib.sha256(data).hexdigest()
+expected = "e17af3fe5a1c58036bc57d1e523fe962ce9c1e920e34f8f81a0b4b6e1daa5d24"
+print(f"Franklin Helps 0.1.20 overlay SHA-256: {actual}")
+assert actual == expected, f"0.1.20 overlay SHA mismatch: {actual}"
+
+with zipfile.ZipFile(overlay, "r") as zf:
+    bad = zf.testzip()
+    assert bad is None, f"0.1.20 overlay ZIP CRC failure at {bad}"
+    zf.extractall("public")
+
+rows = []
+for p in sorted(x for x in Path("public").rglob("*") if x.is_file()):
+    rel = p.relative_to("public").as_posix()
+    rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n")
+tree_hash = hashlib.sha256("".join(rows).encode("utf-8")).hexdigest()
+expected_tree_hash = "968f0246749797962bcbe8be3970da257b2f3cdc3e4a764a05ca0a973e1eadfe"
+print(f"Franklin Helps FH-MAIN-0.1.20 public tree SHA-256: {tree_hash}")
+assert len(rows) == 85, f"unexpected public file count: {len(rows)}"
+assert tree_hash == expected_tree_hash, f"0.1.20 public tree SHA mismatch: {tree_hash}"
+assert Path("public/index.html").is_file(), "public/index.html missing after 0.1.20 overlay"
+print("Franklin Helps FH-MAIN-0.1.20 exact public tree verified.")
+PY
