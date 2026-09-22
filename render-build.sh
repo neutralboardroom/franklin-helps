@@ -54,3 +54,43 @@ assert tree_hash == expected_tree_hash, f"public tree SHA mismatch: {tree_hash}"
 assert Path("public/index.html").is_file(), "public/index.html missing"
 print("Franklin Helps FH-MAIN-0.1.18 exact public tree verified and extracted.")
 PY
+
+# Apply the exact FH-MAIN-0.1.19 sitewide language / hierarchy / header-logo patch.
+cat deploy/patch19.part*.b64 | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.19.patch.gz
+
+python3 - <<'PY'
+from pathlib import Path
+import gzip, hashlib, subprocess
+
+gz = Path("/tmp/franklin-helps-0.1.19.patch.gz").read_bytes()
+gz_sha = hashlib.sha256(gz).hexdigest()
+expected_gz_sha = "b01403fa391ca94e435167ff8decb5c47076bad5cd70eacf97c5857ff94f7a61"
+print(f"Franklin Helps 0.1.19 patch gzip SHA-256: {gz_sha}")
+assert gz_sha == expected_gz_sha, f"0.1.19 gzip patch SHA mismatch: {gz_sha}"
+
+patch = gzip.decompress(gz)
+patch_sha = hashlib.sha256(patch).hexdigest()
+expected_patch_sha = "61073cbca88663cda6b9d2f42b6b2dd0443f1794b86a2b5dd05f808eacad520f"
+print(f"Franklin Helps 0.1.19 patch SHA-256: {patch_sha}")
+assert patch_sha == expected_patch_sha, f"0.1.19 patch SHA mismatch: {patch_sha}"
+
+patch_path = Path("/tmp/franklin-helps-0.1.19.patch")
+patch_path.write_bytes(patch)
+subprocess.run(
+    ["git", "apply", "--whitespace=nowarn", str(patch_path)],
+    check=True,
+)
+
+rows = []
+for p in sorted(x for x in Path("public").rglob("*") if x.is_file()):
+    rel = p.relative_to("public").as_posix()
+    rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n")
+tree_hash = hashlib.sha256("".join(rows).encode("utf-8")).hexdigest()
+expected_tree_hash = "4b35666e9ae5f2966a37b94f94399e5b7c4d884c527674af69c9f4c561645aef"
+print(f"Franklin Helps FH-MAIN-0.1.19 public tree SHA-256: {tree_hash}")
+assert len(rows) == 85, f"unexpected public file count: {len(rows)}"
+assert tree_hash == expected_tree_hash, f"0.1.19 public tree SHA mismatch: {tree_hash}"
+assert Path("public/index.html").is_file(), "public/index.html missing after 0.1.19 patch"
+print("Franklin Helps FH-MAIN-0.1.19 exact public tree verified.")
+PY
+
