@@ -246,3 +246,31 @@ assert tree==expected_tree, (tree,expected_tree)
 assert Path("public/index.html").is_file()
 print("Franklin Helps FH-MAIN-0.1.23 exact public tree verified.")
 PY
+
+
+# Apply exact FH-MAIN-0.1.24 full live-site-audit static bundle.
+tr -d '\n' < deploy/static24.b64 | base64 -d > /tmp/franklin-helps-static-0.1.24.zip
+python3 - <<'PY'
+from pathlib import Path
+import hashlib, zipfile
+bundle=Path("/tmp/franklin-helps-static-0.1.24.zip")
+expected_bundle="d1c616e1632681fc3708282b8c2df323144020bbab2651b0fd725b8f7f661405"
+actual=hashlib.sha256(bundle.read_bytes()).hexdigest()
+print(f"Franklin Helps 0.1.24 static bundle SHA-256: {actual}")
+assert actual==expected_bundle, (actual, expected_bundle)
+with zipfile.ZipFile(bundle) as z:
+    bad=z.testzip()
+    assert bad is None, bad
+    z.extractall("public")
+rows=[]
+for p in sorted(x for x in Path("public").rglob("*") if x.is_file()):
+    rel=p.relative_to("public").as_posix()
+    rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n")
+tree=hashlib.sha256("".join(rows).encode()).hexdigest()
+expected_tree="2ef35e0a2eeb7d71627c967ed6a523f5b5fcea0415ce5d33be43501593bf73ae"
+print(f"Franklin Helps FH-MAIN-0.1.24 public tree SHA-256: {tree}")
+assert len(rows)==84, len(rows)
+assert tree==expected_tree, (tree,expected_tree)
+assert Path("public/index.html").is_file()
+print("Franklin Helps FH-MAIN-0.1.24 exact public tree verified.")
+PY
