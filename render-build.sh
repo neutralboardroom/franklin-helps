@@ -148,3 +148,40 @@ assert tree_hash == expected_tree_hash, f"0.1.20 public tree SHA mismatch: {tree
 assert Path("public/index.html").is_file(), "public/index.html missing after 0.1.20 overlay"
 print("Franklin Helps FH-MAIN-0.1.20 exact public tree verified.")
 PY
+
+
+# Apply exact FH-MAIN-0.1.21 V5 final outreach-polish patch.
+tr -d '\n' < deploy/patch21.b64 | base64 -d > /tmp/franklin-helps-0.1.21.patch.gz
+
+python3 - <<'PY'
+from pathlib import Path
+import gzip, hashlib, subprocess
+
+gz = Path("/tmp/franklin-helps-0.1.21.patch.gz").read_bytes()
+gz_sha = hashlib.sha256(gz).hexdigest()
+expected_gz_sha = "f739184be1ace14fb4e1c6005a479f9f22dd88d01461893a230f528908d080b0"
+print(f"Franklin Helps 0.1.21 patch gzip SHA-256: {gz_sha}")
+assert gz_sha == expected_gz_sha, f"0.1.21 gzip patch SHA mismatch: {gz_sha}"
+
+patch = gzip.decompress(gz)
+patch_sha = hashlib.sha256(patch).hexdigest()
+expected_patch_sha = "005bbeb24ca4d1252f77781b515666cdf76110679c4bf43905c03c07abf3f355"
+print(f"Franklin Helps 0.1.21 patch SHA-256: {patch_sha}")
+assert patch_sha == expected_patch_sha, f"0.1.21 patch SHA mismatch: {patch_sha}"
+
+patch_path = Path("/tmp/franklin-helps-0.1.21.patch")
+patch_path.write_bytes(patch)
+subprocess.run(["git", "apply", "--whitespace=nowarn", str(patch_path)], check=True)
+
+rows = []
+for p in sorted(x for x in Path("public").rglob("*") if x.is_file()):
+    rel = p.relative_to("public").as_posix()
+    rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n")
+tree_hash = hashlib.sha256("".join(rows).encode("utf-8")).hexdigest()
+expected_tree_hash = "e5387ce7c5cbf3da7f424260b48d2b62d52f2fcd8fb1fc3e10c4daf5a2cccdfe"
+print(f"Franklin Helps FH-MAIN-0.1.21 public tree SHA-256: {tree_hash}")
+assert len(rows) == 84, f"unexpected public file count: {len(rows)}"
+assert tree_hash == expected_tree_hash, f"0.1.21 public tree SHA mismatch: {tree_hash}"
+assert Path("public/index.html").is_file(), "public/index.html missing after 0.1.21 patch"
+print("Franklin Helps FH-MAIN-0.1.21 exact public tree verified.")
+PY
