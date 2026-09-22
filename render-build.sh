@@ -218,3 +218,31 @@ assert tree_hash == expected_tree_hash, f"0.1.22 public tree SHA mismatch: {tree
 assert Path("public/index.html").is_file(), "public/index.html missing after 0.1.22 overlay"
 print("Franklin Helps FH-MAIN-0.1.22 exact public tree verified.")
 PY
+
+
+# Apply exact FH-MAIN-0.1.23 full static bundle.
+tr -d '\n' < deploy/static23.b64 | base64 -d > /tmp/franklin-helps-static-0.1.23.zip
+python3 - <<'PY'
+from pathlib import Path
+import hashlib, zipfile, shutil
+bundle=Path("/tmp/franklin-helps-static-0.1.23.zip")
+expected_bundle="c7340e879ed42f66fc4535732c3e5b9f859c908ec92392e88d32d41a6e5e044f"
+actual=hashlib.sha256(bundle.read_bytes()).hexdigest()
+print(f"Franklin Helps 0.1.23 static bundle SHA-256: {actual}")
+assert actual==expected_bundle, (actual, expected_bundle)
+with zipfile.ZipFile(bundle) as z:
+    bad=z.testzip()
+    assert bad is None, bad
+    z.extractall("public")
+rows=[]
+for p in sorted(x for x in Path("public").rglob("*") if x.is_file()):
+    rel=p.relative_to("public").as_posix()
+    rows.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n")
+tree=hashlib.sha256("".join(rows).encode()).hexdigest()
+expected_tree="b3250b8546ad6f368882ebda493c7f87d57a951fed857f804ea1cabd00d60f12"
+print(f"Franklin Helps FH-MAIN-0.1.23 public tree SHA-256: {tree}")
+assert len(rows)==84, len(rows)
+assert tree==expected_tree, (tree,expected_tree)
+assert Path("public/index.html").is_file()
+print("Franklin Helps FH-MAIN-0.1.23 exact public tree verified.")
+PY
