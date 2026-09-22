@@ -56,7 +56,20 @@ print("Franklin Helps FH-MAIN-0.1.18 exact public tree verified and extracted.")
 PY
 
 # Apply the exact FH-MAIN-0.1.19 sitewide language / hierarchy / header-logo patch.
-cat deploy/patch19.part*.b64 | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.19.patch.gz
+cat \
+  deploy/patch19.part00.b64 \
+  deploy/patch19.part01.b64 \
+  deploy/patch19.part02.b64 \
+  deploy/patch19.part03.b64 \
+  deploy/patch19.fix04a.b64 \
+  deploy/patch19.fix04b.b64 \
+  deploy/patch19.part05.b64 \
+  deploy/patch19.fix06a.b64 \
+  deploy/patch19.fix06b.b64 \
+  deploy/patch19.part07.b64 \
+  deploy/patch19.part08.b64 \
+  deploy/patch19.part09.b64 \
+  | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.19.patch.gz
 
 python3 - <<'PY'
 from pathlib import Path
