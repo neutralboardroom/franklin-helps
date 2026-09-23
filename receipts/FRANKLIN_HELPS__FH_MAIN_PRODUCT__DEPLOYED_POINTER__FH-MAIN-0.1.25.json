@@ -1,0 +1,17 @@
+{
+  "accepted": "PENDING_SCC",
+  "current": "PENDING_SCC",
+  "deployed": true,
+  "deployed_source_commit": "23e07f411438d64a39b294a10dce866b5ecdfebf",
+  "live": true,
+  "note": "Latest deployed Main Product runtime; deployment state does not supersede SCC acceptance/currentness.",
+  "predecessor": "FH-MAIN-0.1.24",
+  "public_tree_sha256": "ea6d2d4749a6c1a89d2628738b2cf880decfb6f9e80eebe931eea3303c21b15b",
+  "release": "FH-MAIN-0.1.25",
+  "render_deploy_id": "dep-dapk0367bikc73fp2lsg",
+  "render_service_id": "srv-daocmg8473hc739qqv8g",
+  "role_id": "FH_MAIN_PRODUCT",
+  "scope": "FOOD_PRIMARY_ESSENTIAL_PRESCRIPTION_SECONDARY_OTHER_NEEDS_REFERRAL_ONLY",
+  "state": "DEPLOYED_LIVE_RENDER_VERIFIED_PENDING_SCC_ACCEPTANCE_AXIS",
+  "static_bundle_sha256": "d8b4664d8d5a6e013e32ef09c3bada76b2d30091b6ea33d5d617e04d937836c4"
+}
