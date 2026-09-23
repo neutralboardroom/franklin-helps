@@ -1,0 +1,58 @@
+{
+  "receipt_type": "PRODUCTION_DEPLOYMENT_RECEIPT",
+  "product": "Franklin Helps",
+  "domain": "franklinhelps.org",
+  "builder_scope": "FH_MAIN_PRODUCT",
+  "release": "FH-MAIN-0.1.26",
+  "predecessor": "FH-MAIN-0.1.25",
+  "state": "DEPLOYED_LIVE_RENDER_VERIFIED",
+  "deployment_date": "2026-09-23",
+  "deployment_authority": "OWNER_EXPLICIT_BUILD_AND_DEPLOY_PLUS_STANDING_DEFAULT_DEPLOY_RULE",
+  "github_repository": "neutralboardroom/franklin-helps",
+  "deployed_source_commit": "395dd3a304664e7ace7d9383b8e20c8d4896d44f",
+  "render_service_id": "srv-daocmg8473hc739qqv8g",
+  "render_workspace": "R's workspace",
+  "render_workspace_id": "tea-d87bbcrtqb8s7394bmcg",
+  "render_deploy_id": "dep-dapkv8e7bikc73fs7v10",
+  "render_status": "LIVE",
+  "render_finished_at": "2026-09-23T04:04:08.550374Z",
+  "deployment_patch_gzip_sha256": "5220e9c3b6a9ce27b787d1a540199c43fce733f642c2d295b70154961972404a",
+  "deployment_patch_sha256": "a1de22dd4b71b643483ef6257ac6077d9c412257bc3ef388cc8989314f9e9863",
+  "public_tree_sha256": "bffcd67dccf1225f3ea04fff24d3c87bffc57db844bcd6e89a4f7978982309fa",
+  "static_bundle_sha256": "d8daf40dd5d8ffb2db2582430d8213e97e68acc3fb678b563edd730591573437",
+  "static_bundle_bytes": 277495,
+  "qualification": {
+    "owner_review": "1245/1245 PASS",
+    "live_site_browser_link": "1673/1673 PASS",
+    "brand_system": "94/94 PASS",
+    "performance_budget": "8/8 PASS",
+    "qr_decode": "5/5 PASS",
+    "predeploy_integrity": "335/335 PASS",
+    "deployment_patch_replay": "PASS",
+    "browser_console_errors": 0,
+    "browser_page_errors": 0
+  },
+  "public_routes": {
+    "english": 17,
+    "spanish": 17
+  },
+  "resource_cards_per_language": 26,
+  "material_changes": {
+    "owner_live_review_findings_authorized": 104,
+    "header_logo_clipping": "FIXED",
+    "desktop_width_system": "IMPLEMENTED",
+    "public_language_cleanup": "SITEWIDE_ORDINARY_PUBLIC_PAGES",
+    "franklin_photo_accents": "IMPLEMENTED_ACROSS_APPROPRIATE_PAGES",
+    "prescription_resource_growth": "24_TO_26_WITH_TN_SHIP_AND_MEDICARE_EXTRA_HELP"
+  },
+  "gates": {
+    "direct_assistance_requests": "CLOSED_NOT_OPEN",
+    "stripe_payments": "CLOSED_PENDING_SETUP",
+    "community_host_live_enrollment": "CLOSED",
+    "real_participant_publication": 0,
+    "physical_credentials": "CLOSED",
+    "live_outreach": "OUTSIDE_MAIN_PRODUCT_NOT_OPENED_BY_RELEASE"
+  },
+  "scc_current_observed": "FH-SCC-0.11.0",
+  "scc_axis_note": "Deployment does not self-promote SCC accepted/current state."
+}
