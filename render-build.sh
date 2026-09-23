@@ -349,12 +349,12 @@ from pathlib import Path
 import gzip, hashlib, subprocess
 
 gz=Path('/tmp/franklin-helps-0.1.27.patch.gz').read_bytes()
-expected_gz='6d6a8ee379e9e35d988f6c1f9308023888844a7d49db29486b1d00afa68b1b70'
+expected_gz='b73a4e6b8fb8a38860cfa96f55907ccbffa0c3a966d6db8b17a879dc2a8dba4e'
 actual_gz=hashlib.sha256(gz).hexdigest()
 print(f'Franklin Helps 0.1.27 patch gzip SHA-256: {actual_gz}')
 assert actual_gz==expected_gz,(actual_gz,expected_gz)
 patch=gzip.decompress(gz)
-expected_patch='6d91ddeae9768b7bfd23bfc7e85a5caf578650dc5832ef97186f522fda31a244'
+expected_patch='659716bdefd9ee35ae207716cb362114212374226ba10e1f1ae870e4fad74688'
 actual_patch=hashlib.sha256(patch).hexdigest()
 print(f'Franklin Helps 0.1.27 patch SHA-256: {actual_patch}')
 assert actual_patch==expected_patch,(actual_patch,expected_patch)
