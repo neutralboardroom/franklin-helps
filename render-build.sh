@@ -373,3 +373,42 @@ assert tree==expected_tree,(tree,expected_tree)
 assert Path('public/index.html').is_file()
 print('Franklin Helps FH-MAIN-0.1.27 exact public tree verified.')
 PY
+
+
+# Apply exact FH-MAIN-0.1.28 owner live-review navigation/public-language patch.
+cat \
+  deploy/patch28d.part00.b64 \
+  deploy/patch28d.part01.b64 \
+  deploy/patch28d.part02.b64 \
+  deploy/patch28d.part03.b64 \
+  deploy/patch28d.part04.b64 \
+  deploy/patch28d.part05.b64 \
+  deploy/patch28d.part06.b64 \
+  deploy/patch28d.part07.b64 \
+  deploy/patch28d.part08.b64 \
+  deploy/patch28d.part09.b64 \
+  deploy/patch28d.part10.b64 \
+  | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.28.patch.gz
+
+python3 - <<'PY'
+from pathlib import Path
+import gzip, hashlib, subprocess
+
+gz=Path('/tmp/franklin-helps-0.1.28.patch.gz').read_bytes()
+patch=gzip.decompress(gz)
+pp=Path('/tmp/franklin-helps-0.1.28.patch')
+pp.write_bytes(patch)
+subprocess.run(['git','apply','--whitespace=nowarn',str(pp)],check=True)
+
+rows=[]
+for p in sorted(x for x in Path('public').rglob('*') if x.is_file()):
+    rel=p.relative_to('public').as_posix()
+    rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n')
+tree=hashlib.sha256(''.join(rows).encode()).hexdigest()
+expected_tree='f458b104f74339f9c6047f34130d0aecb3356bc8f8c947fbf50af731092375d1'
+print(f'Franklin Helps FH-MAIN-0.1.28 public tree SHA-256: {tree}')
+assert len(rows)==82,len(rows)
+assert tree==expected_tree,(tree,expected_tree)
+assert Path('public/index.html').is_file()
+print('Franklin Helps FH-MAIN-0.1.28 exact public tree verified.')
+PY
