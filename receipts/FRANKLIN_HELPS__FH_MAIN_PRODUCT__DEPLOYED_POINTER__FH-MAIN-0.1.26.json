@@ -1,0 +1,17 @@
+{
+  "role_id": "FH_MAIN_PRODUCT",
+  "release": "FH-MAIN-0.1.26",
+  "predecessor": "FH-MAIN-0.1.25",
+  "deployed": true,
+  "live": true,
+  "accepted": "PENDING_SCC",
+  "current": "PENDING_SCC",
+  "state": "DEPLOYED_LIVE_RENDER_VERIFIED_PENDING_SCC_ACCEPTANCE_AXIS",
+  "deployed_source_commit": "395dd3a304664e7ace7d9383b8e20c8d4896d44f",
+  "render_service_id": "srv-daocmg8473hc739qqv8g",
+  "render_deploy_id": "dep-dapkv8e7bikc73fs7v10",
+  "public_tree_sha256": "bffcd67dccf1225f3ea04fff24d3c87bffc57db844bcd6e89a4f7978982309fa",
+  "static_bundle_sha256": "d8daf40dd5d8ffb2db2582430d8213e97e68acc3fb678b563edd730591573437",
+  "resource_cards": 26,
+  "note": "Latest deployed Main Product runtime; deployment state does not supersede SCC acceptance/currentness."
+}
