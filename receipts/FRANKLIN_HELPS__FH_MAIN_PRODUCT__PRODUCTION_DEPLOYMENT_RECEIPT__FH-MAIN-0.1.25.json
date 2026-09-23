@@ -1,0 +1,59 @@
+{
+  "builder_scope": "FH_MAIN_PRODUCT",
+  "deployed_source_commit": "23e07f411438d64a39b294a10dce866b5ecdfebf",
+  "deployment_authority": "STANDING_OWNER_RULE_DEPLOY_EVERY_NEW_VERSION_UNLESS_EXPLICITLY_WITHHELD_2026-09-21",
+  "deployment_date": "2026-09-23",
+  "deployment_patch_gzip_sha256": "6d59d137e4ea2eb166792d692a2e19b51a70a674ba19160a4b7baf7f929fb953",
+  "deployment_patch_sha256": "91f536ec6625e525e38eca8e85223fe6f93d9d84faf7ed6561832538c4a37bcf",
+  "domain": "franklinhelps.org",
+  "gates": {
+    "community_host_live_enrollment": "CLOSED",
+    "live_outreach": "OUTSIDE_MAIN_PRODUCT_NOT_OPENED_BY_RELEASE",
+    "physical_credentials": "CLOSED",
+    "real_participant_publication": 0,
+    "stripe_payments": "CLOSED_PENDING_SETUP",
+    "tax_deductibility_claim": "NOT_AUTHORIZED_UNTIL_DOCUMENTED"
+  },
+  "github_repository": "neutralboardroom/franklin-helps",
+  "predecessor": "FH-MAIN-0.1.24",
+  "product": "Franklin Helps",
+  "public_tree_sha256": "ea6d2d4749a6c1a89d2628738b2cf880decfb6f9e80eebe931eea3303c21b15b",
+  "qualification": {
+    "brand_system": "94/94 PASS",
+    "browser_console_errors": 0,
+    "browser_page_errors": 0,
+    "live_site_browser_link": "1673/1673 PASS",
+    "performance_budget": "8/8 PASS",
+    "predeploy": "1796/1796 PASS",
+    "qr_decode": "5/5 PASS",
+    "remaining_pages_preservation": "234/234 PASS",
+    "scope_narrowing": "35/35 PASS",
+    "smoke_routes": "23/23 HTTP 200"
+  },
+  "receipt_type": "PRODUCTION_DEPLOYMENT_RECEIPT",
+  "release": "FH-MAIN-0.1.25",
+  "render_build_assertions": {
+    "exact_public_tree_verified": "PASS",
+    "patch_gzip_sha256": "PASS",
+    "patch_sha256": "PASS",
+    "public_tree_sha256": "PASS"
+  },
+  "render_deploy_id": "dep-dapk0367bikc73fp2lsg",
+  "render_finished_at": "2026-09-23T02:57:37.346998Z",
+  "render_service_id": "srv-daocmg8473hc739qqv8g",
+  "render_status": "LIVE",
+  "render_workspace": "R's workspace",
+  "render_workspace_id": "tea-d87bbcrtqb8s7394bmcg",
+  "scc_accepted_axis_note": "Deployment does not self-promote SCC accepted/current state.",
+  "scc_current_observed": "FH-SCC-0.11.0",
+  "scope_rule": {
+    "direct_assistance_requests": "NOT_OPEN",
+    "essential_prescription_assistance": "SECONDARY",
+    "food_assistance": "PRIMARY",
+    "other_needs": "VERIFIED_REFERRAL_RESOURCE_NAVIGATION_ONLY",
+    "owner_command_sha256": "cab2112260b121a5004d4e57cbccf7b17e551cb112935c009f9c057291c7c60d"
+  },
+  "state": "DEPLOYED_LIVE_RENDER_VERIFIED",
+  "static_bundle_bytes": 275930,
+  "static_bundle_sha256": "d8b4664d8d5a6e013e32ef09c3bada76b2d30091b6ea33d5d617e04d937836c4"
+}
