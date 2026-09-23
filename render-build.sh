@@ -423,3 +423,38 @@ assert tree==expected_tree,(tree,expected_tree)
 assert Path('public/index.html').is_file()
 print('Franklin Helps FH-MAIN-0.1.28 exact public tree verified.')
 PY
+
+
+# Apply exact FH-MAIN-0.1.29 logo, resource-finder and public-copy clarity overlay.
+cat \
+  deploy/overlay29xz.groupA.b64 \
+  deploy/overlay29xz.groupB.b64 \
+  deploy/overlay29xz.groupC.b64 \
+  deploy/overlay29xz.groupD.b64 \
+  | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.29-overlay.tar.xz
+
+python3 - <<'PY'
+from pathlib import Path
+import hashlib, tarfile
+
+overlay=Path('/tmp/franklin-helps-0.1.29-overlay.tar.xz')
+actual=hashlib.sha256(overlay.read_bytes()).hexdigest()
+expected='5126447d3e2b319d29ee7efe900f62937b410403285323b079e2f451faaf7f12'
+print(f'Franklin Helps 0.1.29 overlay xz SHA-256: {actual}')
+assert actual==expected,(actual,expected)
+
+with tarfile.open(overlay,'r:xz') as tf:
+    tf.extractall('public')
+
+rows=[]
+for p in sorted(x for x in Path('public').rglob('*') if x.is_file()):
+    rel=p.relative_to('public').as_posix()
+    rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n')
+tree=hashlib.sha256(''.join(rows).encode()).hexdigest()
+expected_tree='27aa0f90075b645245568dac68c2bb48804699606e463a2e86edb5d081c53858'
+print(f'Franklin Helps FH-MAIN-0.1.29 public tree SHA-256: {tree}')
+assert len(rows)==82,len(rows)
+assert tree==expected_tree,(tree,expected_tree)
+assert Path('public/index.html').is_file()
+print('Franklin Helps FH-MAIN-0.1.29 exact public tree verified.')
+PY
