@@ -340,3 +340,36 @@ assert tree==expected_tree,(tree,expected_tree)
 assert Path('public/index.html').is_file()
 print('Franklin Helps FH-MAIN-0.1.26 exact public tree verified.')
 PY
+
+
+# Apply exact FH-MAIN-0.1.27 medication-access bridge and header-logo patch.
+tr -d '\n' < deploy/patch27.b64 | base64 -d > /tmp/franklin-helps-0.1.27.patch.gz
+python3 - <<'PY'
+from pathlib import Path
+import gzip, hashlib, subprocess
+
+gz=Path('/tmp/franklin-helps-0.1.27.patch.gz').read_bytes()
+expected_gz='6d6a8ee379e9e35d988f6c1f9308023888844a7d49db29486b1d00afa68b1b70'
+actual_gz=hashlib.sha256(gz).hexdigest()
+print(f'Franklin Helps 0.1.27 patch gzip SHA-256: {actual_gz}')
+assert actual_gz==expected_gz,(actual_gz,expected_gz)
+patch=gzip.decompress(gz)
+expected_patch='6d91ddeae9768b7bfd23bfc7e85a5caf578650dc5832ef97186f522fda31a244'
+actual_patch=hashlib.sha256(patch).hexdigest()
+print(f'Franklin Helps 0.1.27 patch SHA-256: {actual_patch}')
+assert actual_patch==expected_patch,(actual_patch,expected_patch)
+pp=Path('/tmp/franklin-helps-0.1.27.patch')
+pp.write_bytes(patch)
+subprocess.run(['git','apply','--whitespace=nowarn',str(pp)],check=True)
+rows=[]
+for p in sorted(x for x in Path('public').rglob('*') if x.is_file()):
+    rel=p.relative_to('public').as_posix()
+    rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n')
+tree=hashlib.sha256(''.join(rows).encode()).hexdigest()
+expected_tree='131dc3c28d5623d20dacd8411f063e94ed5a8c7e83ac5f07e6860f47b8859ab7'
+print(f'Franklin Helps FH-MAIN-0.1.27 public tree SHA-256: {tree}')
+assert len(rows)==86,len(rows)
+assert tree==expected_tree,(tree,expected_tree)
+assert Path('public/index.html').is_file()
+print('Franklin Helps FH-MAIN-0.1.27 exact public tree verified.')
+PY
