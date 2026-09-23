@@ -375,30 +375,41 @@ print('Franklin Helps FH-MAIN-0.1.27 exact public tree verified.')
 PY
 
 
-# Apply exact FH-MAIN-0.1.28 owner live-review navigation/public-language patch.
+# Apply exact FH-MAIN-0.1.28 owner live-review navigation/public-language overlay.
 cat \
-  deploy/patch28d.part00.b64 \
-  deploy/patch28d.part01.b64 \
-  deploy/patch28d.part02.b64 \
-  deploy/patch28d.part03.b64 \
-  deploy/patch28d.part04.b64 \
-  deploy/patch28d.part05.b64 \
-  deploy/patch28d.part06.b64 \
-  deploy/patch28d.part07.b64 \
-  deploy/patch28d.part08.b64 \
-  deploy/patch28d.part09.b64 \
-  deploy/patch28d.part10.b64 \
-  | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.28.patch.gz
+  deploy/overlay28xz.groupA.b64 \
+  deploy/overlay28xz.groupB.b64 \
+  deploy/overlay28xz.groupC.b64 \
+  deploy/overlay28xz.groupD.b64 \
+  | tr -d '\n' | base64 -d > /tmp/franklin-helps-0.1.28-overlay.tar.xz
 
 python3 - <<'PY'
 from pathlib import Path
-import gzip, hashlib, subprocess
+import hashlib, tarfile
 
-gz=Path('/tmp/franklin-helps-0.1.28.patch.gz').read_bytes()
-patch=gzip.decompress(gz)
-pp=Path('/tmp/franklin-helps-0.1.28.patch')
-pp.write_bytes(patch)
-subprocess.run(['git','apply','--whitespace=nowarn',str(pp)],check=True)
+overlay=Path('/tmp/franklin-helps-0.1.28-overlay.tar.xz')
+actual=hashlib.sha256(overlay.read_bytes()).hexdigest()
+expected='370580ce69b636cd4981cbe04dfd8e584c8efbf1fe3c999f56b27d2b33a59d17'
+print(f'Franklin Helps 0.1.28 overlay xz SHA-256: {actual}')
+assert actual==expected,(actual,expected)
+
+with tarfile.open(overlay,'r:xz') as tf:
+    tf.extractall('public')
+
+for rel in [
+    'assets/franklin-helps-logo-approved-site.webp',
+    'assets/logo-franklin-helps.svg',
+    'es/status/index.html',
+    'status/index.html',
+]:
+    p=Path('public')/rel
+    if p.exists():
+        p.unlink()
+for rel in ['es/status','status']:
+    p=Path('public')/rel
+    if p.exists() and p.is_dir():
+        try: p.rmdir()
+        except OSError: pass
 
 rows=[]
 for p in sorted(x for x in Path('public').rglob('*') if x.is_file()):
