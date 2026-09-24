@@ -458,3 +458,22 @@ assert tree==expected_tree,(tree,expected_tree)
 assert Path('public/index.html').is_file()
 print('Franklin Helps FH-MAIN-0.1.29 exact public tree verified.')
 PY
+
+# Apply exact FH-MAIN-0.1.30 medication-resource currentness transform.
+python3 deploy/transform_public_030.py
+
+python3 - <<'PY'
+from pathlib import Path
+import hashlib
+rows=[]
+for p in sorted(x for x in Path('public').rglob('*') if x.is_file()):
+    rel=p.relative_to('public').as_posix()
+    rows.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {rel}\n')
+tree=hashlib.sha256(''.join(rows).encode()).hexdigest()
+expected_tree='903031e30b9f8ab566f911351afe50be325c8e3bcdc689998905b0d65c8cf17c'
+print(f'Franklin Helps FH-MAIN-0.1.30 public tree SHA-256: {tree}')
+assert len(rows)==82,len(rows)
+assert tree==expected_tree,(tree,expected_tree)
+assert Path('public/index.html').is_file()
+print('Franklin Helps FH-MAIN-0.1.30 exact public tree verified.')
+PY
