@@ -1,0 +1,120 @@
+name: Temporary encrypted PB2 NY source transfer
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pb2-encrypted-ny-transfer.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch, qualify, minimize, encrypt, and push ciphertext only
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/pb2-transfer
+          mkdir -p /tmp/pb2-transfer
+          cat > /tmp/pb2-transfer/acquire.py <<'PY'
+          import csv, io, json, re, urllib.parse, urllib.request, collections, hashlib
+          from datetime import datetime
+          BASE='https://data.transportation.gov/resource/az4n-8mr2.csv'
+          select='dot_number,legal_name,dba_name,phy_street,phy_city,phy_state,phy_zip,phone,email_address,mcs150_date,status_code'
+          where="phy_state='NY' AND status_code='A' AND email_address is not null AND mcs150_date>='20241012'"
+          params={'$select':select,'$where':where,'$order':'dot_number','$limit':'50000'}
+          url=BASE+'?'+urllib.parse.urlencode(params)
+          req=urllib.request.Request(url,headers={'User-Agent':'PrescriptionBridge-PB2-source-verification/1.0'})
+          raw=urllib.request.urlopen(req,timeout=180).read()
+          rows=list(csv.DictReader(io.StringIO(raw.decode('utf-8-sig'))))
+          tld_req=urllib.request.Request('https://data.iana.org/TLD/tlds-alpha-by-domain.txt',headers={'User-Agent':'PrescriptionBridge-PB2-source-verification/1.0'})
+          tlds={x.strip().lower() for x in urllib.request.urlopen(tld_req,timeout=60).read().decode().splitlines() if x and not x.startswith('#')}
+          free={'gmail.com','yahoo.com','hotmail.com','outlook.com','aol.com','icloud.com','msn.com','live.com','me.com','protonmail.com','ymail.com','rocketmail.com','mail.com','gmx.com','gmx.net','zoho.com','yandex.com','yandex.ru','comcast.net','verizon.net','att.net','sbcglobal.net','bellsouth.net','cox.net','charter.net','optonline.net','frontier.com','windstream.net','earthlink.net','roadrunner.com','twc.com','rr.com'}
+          typo={'gamil.com','gmial.com','gmai.com','gmail.co','gmail.c','gmail.con','gmail.cm','gmail.net','gmail.org','yaho.com','yahoo.co','yahoo.c','yahoo.con','hotmai.com','hotmail.co','outlok.com','outlook.co','aol.co'}
+          email_re=re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$")
+          prelim=[]; audit=[]
+          for r in rows:
+            e=(r.get('email_address') or '').strip().lower(); reason=None
+            if not e or len(e)>254 or not email_re.match(e): reason='HELD_MALFORMED_EMAIL'
+            else:
+              local,domain=e.rsplit('@',1); tld=domain.rsplit('.',1)[-1]
+              if len(local)>64 or domain in typo or tld not in tlds: reason='HELD_INVALID_OR_TYPO_DOMAIN'
+              elif domain in free: reason='EXCLUDED_CONSUMER_FREE_MAIL'
+            rec={k:(r.get(k) or '').strip() for k in ['dot_number','legal_name','dba_name','phy_street','phy_city','phy_state','phy_zip','phone','mcs150_date']}; rec['email']=e
+            if reason: rec['disposition']=reason; audit.append(rec)
+            else: prelim.append(rec)
+          def date_key(v):
+            for fmt in ('%d-%b-%y','%Y%m%d','%Y-%m-%dT%H:%M:%S.%f','%Y-%m-%d'):
+              try:return datetime.strptime(v,fmt)
+              except:pass
+            return datetime.min
+          best={}; duplicates=0
+          for r in prelim:
+            e=r['email']; prev=best.get(e)
+            score=(date_key(r['mcs150_date']),-(int(r['dot_number']) if r['dot_number'].isdigit() else 10**12))
+            prevscore=(date_key(prev['mcs150_date']),-(int(prev['dot_number']) if prev and prev['dot_number'].isdigit() else 10**12)) if prev else None
+            if prev is None or score>prevscore:
+              if prev is not None: p=dict(prev); p['disposition']='DUPLICATE_MAILBOX_SUPERSEDED'; audit.append(p); duplicates+=1
+              best[e]=r
+            else: p=dict(r); p['disposition']='DUPLICATE_MAILBOX_SUPERSEDED'; audit.append(p); duplicates+=1
+          dedup=list(best.values()); dom_emails=collections.defaultdict(set); dom_orgs=collections.defaultdict(set)
+          for r in dedup:
+            d=r['email'].rsplit('@',1)[1]; dom_emails[d].add(r['email']); dom_orgs[d].add((r['legal_name'] or r['dba_name']).upper())
+          shared=set()
+          for d in dom_orgs:
+            orgs=len(dom_orgs[d]); ems=len(dom_emails[d])
+            if orgs>=20 and (ems<=3 or orgs/max(ems,1)>=8): shared.add(d)
+          agent_terms=('compliance','permit','truckingoffice','dotservice','transportationservice','sgtransportation','uscompliance')
+          for d in list(dom_orgs):
+            if len(dom_orgs[d])>=10 and any(t in d for t in agent_terms): shared.add(d)
+          accepted=[]
+          for r in dedup:
+            d=r['email'].rsplit('@',1)[1]
+            if d in shared: x=dict(r); x['disposition']='HELD_LIKELY_SHARED_THIRD_PARTY_ROUTE'; audit.append(x)
+            else: accepted.append(r)
+          accepted.sort(key=lambda r:(r['email'],r['dot_number']))
+          keep=['dot_number','legal_name','email','phone','phy_city','phy_zip','mcs150_date']
+          with open('/tmp/pb2-transfer/ny_qualified.csv','w',newline='',encoding='utf-8') as f:
+            w=csv.DictWriter(f,fieldnames=keep); w.writeheader();
+            for r in accepted: w.writerow({k:r.get(k,'') for k in keep})
+          stats={'source':BASE,'dataset_id':'az4n-8mr2','source_date':'2026-10-12','state':'NY','raw_active_recent_rows':len(rows),'prelim_nonconsumer_syntax_valid_rows':len(prelim),'unique_prelim_mailboxes':len(dedup),'candidate_source_verified_routes':len(accepted),'held_or_excluded_rows':len(audit),'duplicate_mailbox_rows':duplicates,'shared_third_party_domains_held':len(shared),'shared_third_party_domains':sorted(shared),'source_snapshot_sha256':hashlib.sha256(raw).hexdigest(),'campaign_eligible':0,'send_authorized':0}
+          open('/tmp/pb2-transfer/stats.json','w').write(json.dumps(stats,indent=2,sort_keys=True)+'\n')
+          PY
+          python /tmp/pb2-transfer/acquire.py
+          cat > /tmp/pb2-transfer/public.pem <<'PEM'
+          -----BEGIN PUBLIC KEY-----
+          MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAtNvjRZkDECx2fhwhs9Am
+          vbqj+b1rbbciDErxgtTEBuRBJSdxbgAtkhyU7sUTYR+aUh/JVvRc+7GJcx7qCzTM
+          RPuZktbBBp5mWSMhnXk91Gw7c9aIsXXzelCihH5k4+WQSJnxBTw2jz6Q3x2H1GwR
+          qUr15CcWoIfLukoWRz2pbt/2nUPW8h2GZ+T3n8e0hgAzJeTe/6ILNTRZ7kp7C24g
+          C3R4OP+z855hXcQVyIrJq8JlnUepbV7xbXZXDRckzo2EWAS78OvEmtmqeEGEVNlQ
+          7d3J03tuKMsotJe4seLvnaMAg0fO9dKo0/B+5JsQgebxQ5zagHalK4vNWs9hBN1v
+          Jw9qX+NexZhv0lef9gkaM9MBVVFFGUKYJFJxNFXi+WFI6CrEOB+12LsVvUGZ9rEW
+          GOmHOv0mKQcNMKIRTW9j5ODTRvZPfZr1zwwf+x4W1A/UVAx/8Q9TNj9Fb+bwxxcY
+          kLZpeUAuZccJCYyAbh7PjEHKoHwRKlEVD/RB1v3EQIdhAgMBAAE=
+          -----END PUBLIC KEY-----
+          PEM
+          xz -9e -c /tmp/pb2-transfer/ny_qualified.csv > /tmp/pb2-transfer/payload.xz
+          keyhex=$(openssl rand -hex 32)
+          ivhex=$(openssl rand -hex 16)
+          printf '%s\n%s\n' "$keyhex" "$ivhex" > /tmp/pb2-transfer/keyinfo.txt
+          openssl enc -aes-256-cbc -K "$keyhex" -iv "$ivhex" -in /tmp/pb2-transfer/payload.xz -out /tmp/pb2-transfer/payload.enc
+          openssl pkeyutl -encrypt -pubin -inkey /tmp/pb2-transfer/public.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in /tmp/pb2-transfer/keyinfo.txt -out /tmp/pb2-transfer/keyinfo.enc
+          rm -rf pb2-encrypted-transfer
+          mkdir -p pb2-encrypted-transfer
+          cp /tmp/pb2-transfer/payload.enc pb2-encrypted-transfer/
+          cp /tmp/pb2-transfer/keyinfo.enc pb2-encrypted-transfer/
+          cp /tmp/pb2-transfer/stats.json pb2-encrypted-transfer/
+          sha256sum /tmp/pb2-transfer/ny_qualified.csv > pb2-encrypted-transfer/plaintext_sha256.txt
+          sha256sum pb2-encrypted-transfer/payload.enc pb2-encrypted-transfer/keyinfo.enc > pb2-encrypted-transfer/ciphertext_sha256.txt
+          printf 'Encrypted PB-2 transfer payload only. No plaintext contact data.\n' > pb2-encrypted-transfer/README.txt
+          git config user.name 'PB2 encrypted transfer runner'
+          git config user.email 'actions@users.noreply.github.com'
+          git add pb2-encrypted-transfer
+          git commit -m 'Temporary encrypted PB-2 NY transfer payload'
+          git push origin HEAD:pb2-encrypted-transfer-20261012 --force
