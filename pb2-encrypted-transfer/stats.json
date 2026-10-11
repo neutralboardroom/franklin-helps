@@ -1,0 +1,20 @@
+{
+  "campaign_eligible": 0,
+  "candidate_source_verified_routes": 13082,
+  "dataset_id": "az4n-8mr2",
+  "duplicate_mailbox_rows": 709,
+  "held_or_excluded_rows": 30767,
+  "prelim_nonconsumer_syntax_valid_rows": 13859,
+  "raw_active_recent_rows": 43849,
+  "send_authorized": 0,
+  "shared_third_party_domains": [
+    "dotservice.com",
+    "sgtransportation.com"
+  ],
+  "shared_third_party_domains_held": 2,
+  "source": "https://data.transportation.gov/resource/az4n-8mr2.csv",
+  "source_date": "2026-10-12",
+  "source_snapshot_sha256": "54d3659d1bdc677901a87e24341fbb6f1e1b7377b625263f8a3425fc34eeb92e",
+  "state": "NY",
+  "unique_prelim_mailboxes": 13150
+}
